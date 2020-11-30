@@ -10,7 +10,7 @@ import 'package:dbite/screens/posting.dart';
 void main() {
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
-    home: Settings(username: 'hammad348',),
+    home: SearchScreen(),
   ));
 }
 
