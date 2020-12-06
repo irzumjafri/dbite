@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:dbite/screens/login.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:dbite/model_classes/url.dart';
 
 class Settings extends StatefulWidget {
 
@@ -50,7 +51,7 @@ class _SettingsState extends State<Settings> {
 
   Future update_data_name()async{
 
-    var url = "http://192.168.0.103/dbite/editprofilename.php";
+    var url = "http://"+URL+"/dbite/editprofilename.php";
     var sendData = {
       "fullname" : fullname,
       "user_id" : username__,
@@ -84,7 +85,7 @@ class _SettingsState extends State<Settings> {
 
   Future update_data_description()async{
 
-    var url = "http://192.168.0.103/dbite/editprofiledescription.php";
+    var url = "http://"+URL+"/dbite/editprofiledescription.php";
     var sendData = {
       "user_id" : username__,
       "description" : desc,
@@ -118,7 +119,7 @@ class _SettingsState extends State<Settings> {
 
   Future update_data_password()async{
 
-    var url = "http://192.168.0.103/dbite/editprofilepassword.php";
+    var url = "http://"+URL+"/dbite/editprofilepassword.php";
     var sendData = {
       "user_id" : username__,
       "password" : password_,
@@ -210,8 +211,21 @@ class _SettingsState extends State<Settings> {
                 Padding(
                   padding: EdgeInsets.only(top: 10),
                   child: Center(
-                    child: FloatingActionButton.extended(
+                    child:FlatButton(
+
+                      color: Colors.blue,
+                      textColor: Colors.white,
+                      disabledColor: Colors.grey,
+                      disabledTextColor: Colors.black,
+                      padding: EdgeInsets.all(8.0),
+                      splashColor: Colors.blueAccent,
+                      child: Text(
+                        "CHANGE",
+                        style: TextStyle(fontSize: 20.0),
+                      ),
+
                       onPressed: (){
+
                         setState(() {
                           // username = user_name.text;
                           password_ = password.text;
@@ -220,10 +234,10 @@ class _SettingsState extends State<Settings> {
                         });
                         update_data_name();
                         // Navigator.pop(context);
-                        // WRITE CODE TO SAVE THE CHANGES MADE IN THE PROFILE
                       },
-                      label: Text('   CHANGE   '),
                     ),
+
+
                   ),
                 ),
                 Padding(
@@ -248,8 +262,21 @@ class _SettingsState extends State<Settings> {
                 Padding(
                   padding: EdgeInsets.only(top: 10),
                   child: Center(
-                    child: FloatingActionButton.extended(
+                    child:FlatButton(
+
+                      color: Colors.blue,
+                      textColor: Colors.white,
+                      disabledColor: Colors.grey,
+                      disabledTextColor: Colors.black,
+                      padding: EdgeInsets.all(8.0),
+                      splashColor: Colors.blueAccent,
+                      child: Text(
+                        "Flat Button",
+                        style: TextStyle(fontSize: 20.0),
+                      ),
+
                       onPressed: (){
+
                         setState(() {
                           // username = user_name.text;
                           password_ = password.text;
@@ -258,9 +285,7 @@ class _SettingsState extends State<Settings> {
                         });
                         update_data_password();
                         // Navigator.pop(context);
-                        // WRITE CODE TO SAVE THE CHANGES MADE IN THE PROFILE
                       },
-                      label: Text('   CHANGE   '),
                     ),
                   ),
                 ),
@@ -287,8 +312,21 @@ class _SettingsState extends State<Settings> {
                     Padding(
                       padding: EdgeInsets.only(top: 10),
                       child: Center(
-                        child: FloatingActionButton.extended(
+                        child:FlatButton(
+
+                          color: Colors.blue,
+                          textColor: Colors.white,
+                          disabledColor: Colors.grey,
+                          disabledTextColor: Colors.black,
+                          padding: EdgeInsets.all(8.0),
+                          splashColor: Colors.blueAccent,
+                          child: Text(
+                            "Flat Button",
+                            style: TextStyle(fontSize: 20.0),
+                          ),
+
                           onPressed: (){
+
                             setState(() {
                               // username = user_name.text;
                               password_ = password.text;
@@ -297,9 +335,7 @@ class _SettingsState extends State<Settings> {
                             });
                             update_data_description();
                             // Navigator.pop(context);
-                            // WRITE CODE TO SAVE THE CHANGES MADE IN THE PROFILE
                           },
-                          label: Text('   CHANGE   '),
                         ),
                       ),
 

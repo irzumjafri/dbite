@@ -2,18 +2,36 @@ import 'package:flutter/material.dart';
 import 'package:dbite/model_classes/user.dart';
 import 'dart:convert';
 import 'package:http/http.dart'as http;
+import 'package:dbite/screens/message_screen.dart';
+import 'package:dbite/model_classes/message.dart';
+import 'package:dbite/model_classes/url.dart';
 
 class SearchedProfile extends StatefulWidget {
 
   User searched_user;
+  String loggedUser;
 
-  SearchedProfile({this.searched_user});
+  SearchedProfile({this.searched_user,this.loggedUser});
 
   @override
-  _SearchedProfileState createState() => _SearchedProfileState(searched_user);
+  _SearchedProfileState createState() => _SearchedProfileState(searched_user,loggedUser);
 }
 
 class _SearchedProfileState extends State<SearchedProfile> {
+
+  String temp_chat = "";
+  String temp_sender ="";
+
+  MessageData thisChat;
+
+
+
+  List<String> chat_parse(String combined){
+    List <String> ans = combined.split("_+_+_+_+_+");
+    return ans;
+  }
+
+
 
   createAlertDialouge(BuildContext context, String texts){
     return showDialog(context: context , builder: (context){
@@ -36,10 +54,35 @@ class _SearchedProfileState extends State<SearchedProfile> {
   String followings = "";
 
   User searched_user;
-  _SearchedProfileState(this.searched_user);
+  String loggedUser;
+  _SearchedProfileState(this.searched_user,this.loggedUser);
+
+  Future get_Chat() async{
+    var url = "http://"+URL+"/dbite/getChat.php";
+    var sendData = {
+      "loggedUser" : loggedUser,
+      "searchedUser" : searched_user.userId,
+    };
+    var response = await http.post(url, body: sendData);
+    var data = json.decode(response.body);
+    // print(data[0]);
+    thisChat = MessageData.fromJson(data[0]);
+
+  }
+
+  Future check_chat() async{
+    var url = "http://"+URL+"/dbite/checkChat.php";
+    var sendData = {
+      "loggedUser" : loggedUser,
+      "searchedUser" : searched_user.userId,
+    };
+    var response = await http.post(url, body: sendData);
+
+  }
+
 
   Future find_followers()async{
-    var url = "http://192.168.0.103/dbite/findfollowers.php";
+    var url = "http://"+URL+"/dbite/findfollowers.php";
     var sendData = {
       "user_id" : searched_user.userId,
     };
@@ -53,7 +96,7 @@ class _SearchedProfileState extends State<SearchedProfile> {
   }
 
   Future find_followings()async{
-    var url = "http://192.168.0.103/dbite/findfollowings.php";
+    var url = "http://"+URL+"/dbite/findfollowings.php";
     var sendData = {
       "user_id" : searched_user.userId,
     };
@@ -71,8 +114,6 @@ class _SearchedProfileState extends State<SearchedProfile> {
     find_followers();
     find_followings();
     // print ("-1-1-1-1-1-1-1-1");
-
-
   }
 
 
@@ -204,6 +245,8 @@ class _SearchedProfileState extends State<SearchedProfile> {
 
 
 
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -219,23 +262,26 @@ class _SearchedProfileState extends State<SearchedProfile> {
           Text(followings),
           Text("followers"),
           Text(followers),
-        //   FlatButton(
-        //
-        //   color: Colors.blue,
-        //   textColor: Colors.white,
-        //   disabledColor: Colors.grey,
-        //   disabledTextColor: Colors.black,
-        //   padding: EdgeInsets.all(8.0),
-        //   splashColor: Colors.blueAccent,
-        //   child: Text(
-        //     "Flat Button",
-        //     style: TextStyle(fontSize: 20.0),
-        //   ),
-        //
-        //   onPressed: (){
-        //     // find_followers();
-        //   },
-        // ),
+          FlatButton(
+
+          color: Colors.blue,
+          textColor: Colors.white,
+          disabledColor: Colors.grey,
+          disabledTextColor: Colors.black,
+          padding: EdgeInsets.all(8.0),
+          splashColor: Colors.blueAccent,
+          child: Text(
+            "SEND MESSAGE",
+            style: TextStyle(fontSize: 20.0),
+          ),
+
+          onPressed: (){
+            // find_followers();
+            check_chat();
+            get_Chat();
+            Navigator.of(context).push(MaterialPageRoute(builder: (context)=>Chat(searchedUser: searched_user.userId,loggedUser: loggedUser,chatUser: chat_parse(thisChat.messageContent),senderinfo: chat_parse(thisChat.messageSenderInfo),threadId: thisChat.messageThreadId,)));
+          },
+        ),
 
         ],
       ),

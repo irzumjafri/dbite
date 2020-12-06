@@ -6,6 +6,8 @@ import 'package:dbite/model_classes/user_authentication.dart';
 import 'package:dbite/api/user_authentication_api.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:dbite/model_classes/url.dart';
+import 'package:dbite/screens/report_data.dart';
 
 
 class Login extends StatefulWidget {
@@ -40,15 +42,19 @@ class _LoginState extends State<Login> {
   String password = "";
 
   Future check_login()async{
-    var url = "http://192.168.0.103/dbite/login.php";
+    var url = "http://"+URL+"/dbite/login.php";
     var sendData = {
       "user_id" : username,
       "password" : password,
     };
+    print("----------------");
     var response = await http.post(url, body: sendData);
+    print("++++++++++++++++++++++++++=");
+
 
 
     var data = json.decode(response.body);
+    print(data);
     if(data=="true"){
       print("Logged in");
       // createAlertDialouge(context, "Successfully logged in");
@@ -107,67 +113,107 @@ class _LoginState extends State<Login> {
           child: Padding(
             padding: EdgeInsets.only(left: 50, right: 50 , top: 10, bottom: 10),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
-                  child: Padding(
-                    padding:EdgeInsets.all(10),
-                    child: Center(
-                      child: TextField(
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          hintText: 'Enter Username',
-                        ),
-                        controller: user_name,
-                      ),
-                    ),
-                  ),
-                ),
-                Container(
-                    child: Padding(
-                      padding:EdgeInsets.all(10),
-                      child: Center(
-                        child: TextField(
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            hintText: 'Enter Password',
-                          ),
-                          controller: pass_word,
-                        ),
-                      ),
-                    ),
-                ),
-                Container(
-                  child: Padding(
-                    padding: EdgeInsets.only(top: 10, bottom: 10),
-                    child: Center(
-                      child: FloatingActionButton.extended(
-                        onPressed: (){
-                          setState(() {
-                            username= user_name.text;
-                            password = pass_word.text;
-                          });
-                          // check_user(username, password);
-                          check_login();
-                        },
-                        label: Text('LOGIN'),
-                      ),
-                    ),
-                  )
-                ),
-                SizedBox(height: 10,),
-                Row(
+                Expanded(child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("Don't have an account? "),
-                    InkWell(
-                      onTap: (){
-                        Navigator.push(context,  MaterialPageRoute(builder: (context)=>Register()));
-                      },
-                      child: Text("Register" , style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline),),
+                    Container(
+                      child: Padding(
+                        padding:EdgeInsets.all(10),
+                        child: Center(
+                          child: TextField(
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              hintText: 'Enter Username',
+                            ),
+                            controller: user_name,
+                          ),
+                        ),
+                      ),
                     ),
+                    Container(
+                      child: Padding(
+                        padding:EdgeInsets.all(10),
+                        child: Center(
+                          child: TextField(
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              hintText: 'Enter Password',
+                            ),
+                            controller: pass_word,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                        child: Padding(
+                          padding: EdgeInsets.only(top: 10, bottom: 10),
+                          child: Center(
+                            child:FlatButton(
+
+                              color: Colors.blue,
+                              textColor: Colors.white,
+                              disabledColor: Colors.grey,
+                              disabledTextColor: Colors.black,
+                              padding: EdgeInsets.all(8.0),
+                              splashColor: Colors.blueAccent,
+                              child: Text(
+                                "LOGIN",
+                                style: TextStyle(fontSize: 20.0),
+                              ),
+
+                              onPressed: (){
+                                setState(() {
+                                  username= user_name.text;
+                                  password = pass_word.text;
+                                });
+                                // check_user(username, password);
+                                check_login();
+                              },
+                            ),
+                          ),
+                        )
+                    ),
+                    SizedBox(height: 10,),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("Don't have an account? "),
+                        InkWell(
+                          onTap: (){
+                            Navigator.push(context,  MaterialPageRoute(builder: (context)=>Register()));
+                          },
+                          child: Text("Register" , style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline),),
+                        ),
+                      ],
+                    )
                   ],
-                )
+                )),
+                Container(
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 10, bottom: 10),
+                      child: Center(
+                        child:FlatButton(
+
+                          color: Colors.blue,
+                          textColor: Colors.white,
+                          disabledColor: Colors.grey,
+                          disabledTextColor: Colors.black,
+                          padding: EdgeInsets.all(8.0),
+                          splashColor: Colors.blueAccent,
+                          child: Text(
+                            "ADMIN PANEL",
+                            style: TextStyle(fontSize: 20.0),
+                          ),
+
+                          onPressed: (){
+                            Navigator.push(context,  MaterialPageRoute(builder: (context)=>ReportData()));
+                          },
+                        ),
+                      ),
+                    )
+                ),
+
               ],
             )
 

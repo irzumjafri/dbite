@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:dbite/screens/login.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:dbite/model_classes/url.dart';
 
 class Register extends StatefulWidget {
   @override
@@ -46,7 +47,7 @@ class _RegisterState extends State<Register> {
 
   Future register()async{
 
-    var url = "http://192.168.0.103/dbite/register.php";
+    var url = "http://"+URL+"/dbite/register.php";
     var sendData = {
       "fullname" : fullname,
       "user_id" : username,
@@ -76,7 +77,7 @@ class _RegisterState extends State<Register> {
 
   Future register1()async{
 
-    var url = "http://192.168.0.103/dbite/register1.php";
+    var url = "http://"+URL+"/dbite/register1.php";
     var sendData = {
       "user_id" : username,
     };
@@ -204,8 +205,21 @@ class _RegisterState extends State<Register> {
                   child: Padding(
                     padding: EdgeInsets.only(top: 5,),
                     child: Center(
-                      child: FloatingActionButton.extended(
+                      child:FlatButton(
+
+                        color: Colors.blue,
+                        textColor: Colors.white,
+                        disabledColor: Colors.grey,
+                        disabledTextColor: Colors.black,
+                        padding: EdgeInsets.all(8.0),
+                        splashColor: Colors.blueAccent,
+                        child: Text(
+                          "REGISTER",
+                          style: TextStyle(fontSize: 20.0),
+                        ),
+
                         onPressed: (){
+
                           setState(() {
                             fullname = full_name.text;
                             username = user_name.text;
@@ -216,8 +230,6 @@ class _RegisterState extends State<Register> {
                           register();
                           Navigator.pop(context);
                         },
-                        label: Text('REGISTER'),
-
                       ),
                     ),
                   )

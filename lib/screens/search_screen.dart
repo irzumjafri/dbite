@@ -3,10 +3,13 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:dbite/model_classes/user.dart';
 import 'package:dbite/screens/searched_profile.dart';
+import 'package:dbite/model_classes/url.dart';
+import 'package:dbite/screens/new_searched_profile.dart';
 
 class SearchScreen extends StatefulWidget {
 
 String username="";
+
 
 SearchScreen({this.username});
 
@@ -48,7 +51,7 @@ class _SearchScreenState extends State<SearchScreen> {
   User user_found;
 
   Future search_user()async{
-    var url = "http://192.168.0.103/dbite/search.php";
+    var url = "http://"+URL+"/dbite/search.php";
     var sendData = {
       "user_id" : user_search,
     };
@@ -119,7 +122,7 @@ class _SearchScreenState extends State<SearchScreen> {
                               search_user();
                           });
                         if(finding_user==true){
-                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>SearchedProfile(searched_user: user_found)));
+                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>NewSearchedProfile(searched_user: user_found, loggedUser: username,)));
                         }
                       },
                     ),

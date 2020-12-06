@@ -1,20 +1,153 @@
 import 'package:flutter/material.dart';
-import 'package:dbite/screens/settings.dart';
-import 'package:dbite/screens/register.dart';
+import 'package:dbite/model_classes/user.dart';
+import 'dart:convert';
+import 'dart:io';
+import 'package:http/http.dart' as http;
+import 'package:dbite/model_classes/url.dart';
+import 'package:dbite/model_classes/message.dart';
 
-class Profile extends StatefulWidget {
+
+class NewSearchedProfile extends StatefulWidget {
+
+
+
+  User searched_user;
+  String loggedUser;
+
+  NewSearchedProfile({this.searched_user,this.loggedUser});
+
   @override
-  _ProfileState createState() => _ProfileState();
+  _NewSearchedProfileState createState() => _NewSearchedProfileState(searched_user,loggedUser);
 }
 
-class _ProfileState extends State<Profile> {
+class _NewSearchedProfileState extends State<NewSearchedProfile> {
+  MessageData thisChat;
+  bool followStatus = false;
+  User searched_user;
+  String loggedUser;
+  _NewSearchedProfileState(this.searched_user,this.loggedUser);
+
+  Future get_Chat() async{
+    var url = "http://"+URL+"/dbite/getChat.php";
+    var sendData = {
+      "loggedUser" : loggedUser,
+      "searchedUser" : searched_user.userId,
+    };
+    var response = await http.post(url, body: sendData);
+    var data = json.decode(response.body);
+    // print(data[0]);
+    thisChat = MessageData.fromJson(data[0]);
+
+  }
+
+  Future check_follow_status() async{
+    var url = "http://"+URL+"/dbite/check_follow_status.php";
+    var sendData = {
+      "loggedUser" : loggedUser,
+      "searchedUser" : searched_user.userId,
+    };
+    var response = await http.post(url, body: sendData);
+    var data = json.decode(response.body);
+    print("--------------------------------");
+    print(data);
+    if(data=='true'){
+      setState(() {
+        followStatus=true;
+      });
+    }else{
+      if(data=='false'){
+        setState(() {
+          followStatus=false;
+        });
+      }
+    }
+
+  }
+
+  Future follow_a_user() async{
+    var url = "http://"+URL+"/dbite/follow_a_user.php";
+    var sendData = {
+      "loggedUser" : loggedUser,
+      "searchedUser" : searched_user.userId,
+    };
+    var response = await http.post(url, body: sendData);
+    refresh();
+
+  }
+
+  Future unfollow_a_user() async{
+    var url = "http://"+URL+"/dbite/unfollow_a_user.php";
+    var sendData = {
+      "loggedUser" : loggedUser,
+      "searchedUser" : searched_user.userId,
+    };
+    var response = await http.post(url, body: sendData);
+    refresh();
+
+  }
+
+  Future check_chat() async{
+    var url = "http://"+URL+"/dbite/checkChat.php";
+    var sendData = {
+      "loggedUser" : loggedUser,
+      "searchedUser" : searched_user.userId,
+    };
+    var response = await http.post(url, body: sendData);
+
+  }
+
+  Future find_followers()async{
+    var url = "http://"+URL+"/dbite/findfollowers.php";
+    var sendData = {
+      "user_id" : searched_user.userId,
+    };
+    var response = await http.post(url, body: sendData);
+
+
+    var data = json.decode(response.body);
+    followers=data.toString();
+    print(data);
+
+  }
+
+  Future find_followings()async{
+    var url = "http://"+URL+"/dbite/findfollowings.php";
+    var sendData = {
+      "user_id" : searched_user.userId,
+    };
+    var response = await http.post(url, body: sendData);
+
+
+    var data = json.decode(response.body);
+    followings=data.toString();
+    print(data);
+
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    find_followers();
+    find_followings();
+    check_follow_status();
+    check_chat();
+  }
+
+  refresh(){
+    setState(() {
+      find_followers();
+      find_followings();
+      get_Chat();
+      check_chat();
+      check_follow_status();
+    });
+  }
 
   String followers="123";
   String followings = "456";
-  String posts = "121";
-  String profile_description= "A resume profile is a brief summary of an applicant's skills, experiences, and goals as they relate to a specific job opening. On the other hand, ";
+  // String posts =searched_user.numberOfPosts;
+  // String profile_description= searched_user.description;
 
-  
   List <Container> post_container = [
     Container(
       margin: EdgeInsets.all(10),
@@ -138,16 +271,17 @@ class _ProfileState extends State<Profile> {
     ),
   ];
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
+      body: 0==1? Center(child: Text("LOADING..." , style: TextStyle(fontSize: 30 , fontWeight: FontWeight.bold),),): SingleChildScrollView(
         child: Column(
           children: [
             Center(
               child: Padding(
                 padding: EdgeInsets.all(10),
-                child: Text("Username" , style: TextStyle(
+                child: Text(searched_user.userId , style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 30
                 ),),
@@ -175,7 +309,7 @@ class _ProfileState extends State<Profile> {
                       children: [
                         Padding(
                           padding: EdgeInsets.all(5),
-                          child: Text(posts, style: TextStyle(
+                          child: Text(searched_user.numberOfPosts, style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 20
                           ),),
@@ -235,14 +369,14 @@ class _ProfileState extends State<Profile> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Container(
-                    child:Text("FULL NAME" , style: TextStyle(
+                    child:Text(searched_user.fullname , style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 20
                     ),),
                   ),
                   Padding(
                     padding: EdgeInsets.all(10),
-                    child: Text(profile_description),
+                    child: Text(searched_user.description),
                   )
                 ],
               ),
@@ -253,22 +387,51 @@ class _ProfileState extends State<Profile> {
               color: Colors.black,
             ),
             SizedBox(height: 10,),
-            FlatButton(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                FlatButton(
 
-              color: Colors.blue,
-              textColor: Colors.white,
-              disabledColor: Colors.grey,
-              disabledTextColor: Colors.black,
-              padding: EdgeInsets.all(8.0),
-              splashColor: Colors.blueAccent,
-              child: Text(
-                "Edit Profile",
-                style: TextStyle(fontSize: 20.0),
-              ),
+                  color: Colors.blue,
+                  textColor: Colors.white,
+                  disabledColor: Colors.grey,
+                  disabledTextColor: Colors.black,
+                  padding: EdgeInsets.all(8.0),
+                  splashColor: Colors.blueAccent,
+                  child: followStatus==false?Text(
+                    "FOLLOW",
+                    style: TextStyle(fontSize: 20.0),
+                  ):
+                  Text("UNFOLLOW",
+                    style: TextStyle(fontSize: 20.0),),
 
-              onPressed: (){
-                Navigator.push(context,  MaterialPageRoute(builder: (context)=>Settings()));
-              },
+                  onPressed: (){
+                    // Navigator.push(context,  MaterialPageRoute(builder: (context)=>Settings()));
+                    followStatus==false?follow_a_user():unfollow_a_user();
+                  },
+                ),
+                FlatButton(
+
+                  color: Colors.blue,
+                  textColor: Colors.white,
+                  disabledColor: Colors.grey,
+                  disabledTextColor: Colors.black,
+                  padding: EdgeInsets.all(8.0),
+                  splashColor: Colors.blueAccent,
+                  child: Text(
+                    "MESSAGE",
+                    style: TextStyle(fontSize: 20.0),
+                  ),
+
+                  onPressed: (){
+                    // Navigator.push(context,  MaterialPageRoute(builder: (context)=>Settings()));
+                    check_follow_status();
+                    setState(() {
+                      // followStatus = !followStatus;
+                    });
+                  },
+                ),
+              ],
             ),
             SizedBox(height: 10,),
             Container(
@@ -315,7 +478,7 @@ class _ProfileState extends State<Profile> {
             )
           ],
         ),
-      )
+      ),
     );
   }
 }
